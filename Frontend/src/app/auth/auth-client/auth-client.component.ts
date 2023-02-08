@@ -12,11 +12,11 @@ export class AuthClientComponent {
   }
 
   formInput: FormGroup = this.fb.group({
-    login: [null, [Validators.required]],
-    password: [null, [Validators.required]]
+    login: ['', [Validators.required]],
+    password: ['', [Validators.required]]
   });
 
   onSubmit(event: any){
-
+      debugger;
   }
 }

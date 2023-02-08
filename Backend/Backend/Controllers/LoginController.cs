@@ -15,7 +15,7 @@ namespace Backend.Controllers
             new Person { Login="qwerty@gmail.com", Password="55555", Role = "user" }
         };
  
-        [HttpPost("/token")]
+        [HttpPost("/login/auth")]
         public IActionResult Token([FromBody]AuthCredential authCredential)
         {
             var identity = GetIdentity(authCredential);

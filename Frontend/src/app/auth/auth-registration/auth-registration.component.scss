@@ -1,0 +1,28 @@
+.form-group {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--center{
+    height:500px
+  }
+
+  &--first{
+    margin-top:100px;
+  }
+}
+
+.main-text {
+  font-size: 24px;
+
+  &--after-content{
+    margin-bottom:40px;
+  }
+}
+
+.logo {
+  &--big{
+    max-width:200px;
+  }
+}

@@ -141,4 +141,31 @@ public class Tests
         }
     }
     
+    [Test]
+    public void ShouldRegister()
+    {
+        var register = new RegistrationCredentials()
+        {
+            FirstName = "Илья",
+            SecondName = "Левин",
+            ThirdName = "Владимирович",
+            Birthdate = DateTime.Now.AddYears(-23),
+            Email = "Levin.8@yandex.ru",
+            Password = "user",
+        };
+        
+        IRepository repository = new Repository();
+        IAuthService auth = new AuthService(repository);
+        
+        var token = auth.SingUp(register);
+        Assert.IsTrue(!string.IsNullOrWhiteSpace(token));
+
+        var user = repository.FindUserById(0);
+
+        if (user.Email != null) 
+            Assert.That(user.Email, Is.EqualTo(register.Email));
+        else
+            Assert.Fail();
+    }
+    
 }

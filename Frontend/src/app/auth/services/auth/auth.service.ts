@@ -19,25 +19,39 @@ export class AuthService {
   currentUser = {};
 
   signUp(user: RegistrationCredentials): Observable<any> {
-    let api = `${this.endpoint}/login/register`;
-    return this.http.post(api, user,{headers: this.headers}).pipe(catchError(this.handleError));
+    let api = `${this.endpoint}login/register`;
+    let body = user;
+    let obs = new Observable((sub) => {
+    this.http.post(api, body,{headers: this.headers})
+      .subscribe({next: (data: any) => {
+        debugger;
+          localStorage.setItem('access_token', data.token);
+          sub.next("Success!");
+      },
+        error: e => {
+        debugger;
+          console.log(e)
+          sub.error(e);
+        }
+    });
+  });
+    return obs;
   }
 
-  login (authCred: AuthCredentials): Observable<any>{
+  auth (authCred: AuthCredentials): Observable<any>{
     let body = authCred;
     let url = this.endpoint + 'login/auth';
     const obs = new Observable((sub) => {
-      this.http.post(url, body, {headers: this.headers}).subscribe((res: any) => {
-          localStorage.setItem('access_token', res.token);
-          this.getUserProfile(res._id).subscribe((value) => {
-            this.currentUser = value;
-            this.router.navigate(['user-profile/' + res.msg._id]);
-          });
+      this.http.post(url, body, {headers: this.headers}).subscribe({next: (data: any) => {
+        debugger;
+          localStorage.setItem('access_token', data.access_token);
+          sub.next("Success!");
         },
-        error => {
-          console.log(error)
-          sub.next("error");
-        });
+        error: e => {
+          console.log(e)
+          sub.error(e);
+        }
+      });
     });
 
     return obs;
@@ -55,7 +69,7 @@ export class AuthService {
   doLogout() {
     let removeToken = localStorage.removeItem('access_token');
     if (removeToken == null) {
-      this.router.navigate(['log-in']);
+      this.router.navigate(['auth']);
     }
   }
 

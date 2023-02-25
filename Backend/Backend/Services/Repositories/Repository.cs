@@ -6,6 +6,7 @@ public class Repository : IRepository
 {
     public void CreateUser(User user)
     {
+        user.Id = usersRepository.Count;
         usersRepository.Add(user);
     }
     
@@ -16,7 +17,7 @@ public class Repository : IRepository
 
     public User FindUserByCredential(AuthCredential credential)
     {
-      return usersRepository
+        return usersRepository
           .First(x => x.Email == credential.Email && x.Password == credential.Password);
     }
 
@@ -38,6 +39,18 @@ public class Repository : IRepository
     }
     
     
-    private List<User> usersRepository = new List<User>();
+    private List<User> usersRepository = new List<User>()
+    {
+        new User()
+        {
+            FirstName = "Илья",
+            SecondName = "Левин",
+            ThirdName = "Владимирович",
+            Birthdate = DateTime.Now.AddYears(-23),
+            Email = "Levin.8@yandex.ru",
+            Password = "Qwerty123!",
+            RoleUser = "user",
+        }
+    };
     
 }

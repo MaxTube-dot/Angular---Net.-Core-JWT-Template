@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthCredentials} from "../models/AuthCredentials";
 import {AuthService} from "../services/auth/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth-client',
@@ -10,7 +11,9 @@ import {AuthService} from "../services/auth/auth.service";
 })
 export class AuthClientComponent implements OnInit {
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder,
+              private authService: AuthService,
+              private router: Router) {
   }
 
   invalidCredentials = false;
@@ -24,9 +27,13 @@ export class AuthClientComponent implements OnInit {
       const authCredentials = new AuthCredentials();
       authCredentials.email = this.form.get("email")?.value;
       authCredentials.password = this.form.get("password")?.value;
-      this.authService.login(authCredentials).subscribe(value => {
-        
-      })
+      this.authService.auth(authCredentials).subscribe({next: data =>{
+        debugger;
+        this.router.navigate(["home"])
+        },
+      error: err => {
+        this.invalidCredentials = true;
+      }})
   }
 
   ngOnInit(): void {

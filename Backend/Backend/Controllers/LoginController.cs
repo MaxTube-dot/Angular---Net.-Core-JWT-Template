@@ -48,5 +48,20 @@ namespace Backend.Controllers
  
             return Json(response);
         }
+        
+        [HttpPost("refresh/token")]
+        [AllowAnonymous]
+        public IActionResult Auth([FromBody]AuthCredential authCredential)
+        {
+            var token = _authService.SignIn(authCredential);
+            
+            
+            var response = new
+            {
+                access_token = token
+            };
+ 
+            return Json(response);
+        }
  }
 }

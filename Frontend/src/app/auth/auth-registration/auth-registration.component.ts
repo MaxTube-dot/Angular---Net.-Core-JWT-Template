@@ -1,15 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
-  ValidationErrors,
-  ValidatorFn,
   Validators
 } from "@angular/forms";
 import {AuthService} from "../services/auth/auth.service";
-import * as moment from "moment";
 import {RegistrationCredentials} from "../models/RegistrationCredentials";
 
 @Component({
@@ -27,7 +22,7 @@ export class AuthRegistrationComponent implements OnInit{
     secondName: ['Левин', [Validators.required]],
     birthDate: ['', [Validators.required]],
     email: ['levin.114@uande.ru', [Validators.required]],
-    password: ['123ewqsdd32', [Validators.minLength(8)]],
+    password: ['123qwerty32', [Validators.minLength(8)]],
     equalPass: []
   });
 
@@ -36,7 +31,7 @@ export class AuthRegistrationComponent implements OnInit{
 
 
 
-  onSubmit(event: any) {
+  onSubmit() {
     let reg = new RegistrationCredentials ();
     reg.firstName = this.form.get("firstName")?.value;
     reg.secondName = this.form.get("secondName")?.value;
@@ -44,7 +39,12 @@ export class AuthRegistrationComponent implements OnInit{
     reg.email = this.form.get("email")?.value;
     reg.password = this.form.get("password")?.value;
 
-    this.authService.signUp(reg)
+    this.authService.signUp(reg).subscribe({next: (date) => {
+      debugger;
+      },
+    error: (err) => {
+      debugger;
+    }});
   }
 
 }

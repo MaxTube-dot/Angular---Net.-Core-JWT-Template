@@ -1,5 +1,6 @@
 using Backend.Models.JWT;
 using Backend.Services;
+using Backend.Services.Interfaces;
 using Backend.Services.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

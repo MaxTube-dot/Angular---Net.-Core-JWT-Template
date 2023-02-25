@@ -14,6 +14,9 @@
       </mat-form-field>
     </div>
 
+    <div *ngIf="invalidCredentials" style="padding-bottom: 22px">
+      <mat-label>Неверный логин или пароль!</mat-label>
+    </div>
     <div>
       <button
         mat-raised-button
@@ -21,8 +24,6 @@
         [disabled]="!form.valid"
         color="primary">Войти</button>
     </div>
-    <div *ngIf="invalidCredentials">
-      Неверный логин или пароль!
-    </div>
+
   </div>
 </form>

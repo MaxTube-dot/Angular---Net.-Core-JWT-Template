@@ -2,6 +2,7 @@ using System.Security.Authentication;
 using Backend.Controllers;
 using Backend.Models.Login;
 using Backend.Services;
+using Backend.Services.Interfaces;
 using Backend.Services.Repositories;
 
 namespace BackendTest;
@@ -36,7 +37,7 @@ public class Tests
         
         IAuthService auth = new AuthService(repository);
         var token = auth.SignIn(authCred);
-        
+
         Assert.IsTrue(!string.IsNullOrWhiteSpace(token));
     }
     
@@ -167,5 +168,7 @@ public class Tests
         else
             Assert.Fail();
     }
+    
+    
     
 }

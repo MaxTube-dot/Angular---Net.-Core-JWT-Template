@@ -3,18 +3,20 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Backend.Models;
+using Backend.Models.JWT;
 using Backend.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Services;
 
 public class JWTManagerRepository : IJWTManagerRepository
 {        
-	private readonly IConfiguration iconfiguration;
+	private readonly IConfiguration _configuration;
 
 	public JWTManagerRepository(IConfiguration iconfiguration)
 	{
-		this.iconfiguration = iconfiguration;
+		this._configuration = iconfiguration;
 	}
 	public Tokens GenerateToken(string userName)
 	{
@@ -31,14 +33,14 @@ public class JWTManagerRepository : IJWTManagerRepository
 		try
 		{
 			var tokenHandler = new JwtSecurityTokenHandler();
-			var tokenKey = Encoding.UTF8.GetBytes(iconfiguration["JWT:Key"]);
+			var tokenKey = Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt")["Key"]);
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = new ClaimsIdentity(new Claim[]
 			  {
 				 new Claim(ClaimTypes.Name, userName)
 			  }),
-				Expires = DateTime.Now.AddMinutes(1),
+				Expires = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration.GetSection("Jwt")["LifeTime"])),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
 			};
 			var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -63,7 +65,7 @@ public class JWTManagerRepository : IJWTManagerRepository
 
 	public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
 	{
-		var Key = Encoding.UTF8.GetBytes(iconfiguration["JWT:Key"]);
+		var Key = Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt")["Key"]);
 
 		var tokenValidationParameters = new TokenValidationParameters
 		{

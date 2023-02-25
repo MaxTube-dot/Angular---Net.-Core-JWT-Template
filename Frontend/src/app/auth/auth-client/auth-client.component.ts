@@ -19,13 +19,13 @@ export class AuthClientComponent implements OnInit {
   invalidCredentials = false;
 
   form: FormGroup = this.fb.group({
-    email: ['',[Validators.required, Validators.email]],
+    email: ['',[Validators.required]],
     password: ['', [Validators.required]]
   });
 
   onSubmit(event: any){
       const authCredentials = new AuthCredentials();
-      authCredentials.email = this.form.get("email")?.value;
+      authCredentials.login = this.form.get("email")?.value;
       authCredentials.password = this.form.get("password")?.value;
       this.authService.auth(authCredentials).subscribe({next: data =>{
         debugger;

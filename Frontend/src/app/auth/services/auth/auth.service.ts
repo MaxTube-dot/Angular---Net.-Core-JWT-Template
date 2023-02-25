@@ -25,7 +25,9 @@ export class AuthService {
     this.http.post(api, body,{headers: this.headers})
       .subscribe({next: (data: any) => {
         debugger;
-          localStorage.setItem('access_token', data.token);
+          localStorage.setItem('access_token', data.access_Token);
+          localStorage.setItem('refresh_Token', data.refresh_Token);
+          this.startRefreshTokenTimer();
           sub.next("Success!");
       },
         error: e => {
@@ -41,10 +43,13 @@ export class AuthService {
   auth (authCred: AuthCredentials): Observable<any>{
     let body = authCred;
     let url = this.endpoint + 'login/auth';
+    debugger;
     const obs = new Observable((sub) => {
       this.http.post(url, body, {headers: this.headers}).subscribe({next: (data: any) => {
         debugger;
-          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('access_token', data.access_Token);
+          localStorage.setItem('refresh_Token', data.refresh_Token);
+          this.startRefreshTokenTimer();
           sub.next("Success!");
         },
         error: e => {
@@ -67,10 +72,9 @@ export class AuthService {
   }
 
   doLogout() {
-    let removeToken = localStorage.removeItem('access_token');
-    if (removeToken == null) {
-      this.router.navigate(['auth']);
-    }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_Token');
+    this.router.navigate(['auth']);
   }
 
   getUserProfile(id: any): Observable<any> {
@@ -86,15 +90,51 @@ export class AuthService {
     handleError(error: HttpErrorResponse) {
       let msg = '';
       if (error.error instanceof ErrorEvent) {
-        // client-side error
         msg = error.error.message;
       } else {
-        // server-side error
         msg = `Error Code: ${error.status}\nMessage: ${error.message}`;
       }
       return throwError(msg);
     }
 
 
+  refreshToken() {
+    debugger;
 
+    const body = {
+      access_token : localStorage.getItem('access_token'),
+      refresh_token : localStorage.getItem('refresh_Token'),
+
+    };
+    return this.http.post<any>(`${this.endpoint}login/refresh/token`, body, { headers: this.headers })
+      .subscribe({next: (data: any) => {
+        debugger;
+        localStorage.setItem('access_token', data.access_Token);
+        localStorage.setItem('refresh_Token', data.refresh_Token);
+        this.startRefreshTokenTimer();
+      },
+      error: e => {
+        console.log(e)
+        this.stopRefreshTokenTimer();
+        this.doLogout();
+      }
+    });
   }
+
+  startRefreshTokenTimer() {
+    // set a timeout to refresh the token a second before it expires
+    debugger;
+    const timeout = 40 * 1000;
+    this.refreshTokenTimeout = setTimeout(() => this.refreshToken(), timeout);
+  }
+
+  private refreshTokenTimeout?: any;
+
+  private stopRefreshTokenTimer() {
+    clearTimeout(this.refreshTokenTimeout);
+  }
+
+
+
+
+}

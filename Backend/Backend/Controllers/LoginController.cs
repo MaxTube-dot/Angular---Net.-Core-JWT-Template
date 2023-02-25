@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Backend.Models;
-using Backend.Models.JWT;
 using Backend.Models.Login;
-using Backend.Services;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
@@ -23,21 +18,35 @@ namespace Backend.Controllers
             this._userServiceRepository = userServiceRepository;
         }
         
-        /*
+        
         [HttpPost("login/register")]
         [AllowAnonymous]
-        public IActionResult Registration([FromBody] RegistrationCredentials registrationCredentials)
+        public async Task<IActionResult> RegistrationAsync([FromBody] RegistrationCredentials registrationCredentials)
         {
-            var token = userServiceRepository..SingUp(registrationCredentials);
+            var validUser = await _userServiceRepository.CreateAsync(registrationCredentials);
             
-            var response = new
+            if (!validUser)
             {
-                access_token = token
-            };
+                return Unauthorized("Некорректный логин или пароль!");
+            }
             
-            return Json(response);
+            var token = _jWtManager.GenerateToken(registrationCredentials.UserName);
+            
+            if (token == null)
+                return Unauthorized("Неудачная попытка!");
+
+                // saving refresh token to the db
+            UserRefreshTokens obj = new UserRefreshTokens
+            {               
+                RefreshToken = token.Refresh_Token,
+                UserName = registrationCredentials.UserName
+            };
+
+            _userServiceRepository.AddUserRefreshTokens(obj);
+            _userServiceRepository.SaveCommit();
+            return Ok(token);
         }
-        */
+        
         
         
         [HttpPost("login/auth")]
@@ -48,21 +57,21 @@ namespace Backend.Controllers
 
             if (!validUser)
             {
-                return Unauthorized("Incorrect username or password!");
+                return Unauthorized("Некорректный логин или пароль!");
             }
 
-            var token = _jWtManager.GenerateToken(userdata.Name);
+            var token = _jWtManager.GenerateToken(userdata.Login);
 
             if (token == null)
             {
-                return Unauthorized("Invalid Attempt!");
+                return Unauthorized("Неудачная попытка!");
             }
 
             // saving refresh token to the db
             UserRefreshTokens obj = new UserRefreshTokens
             {               
                 RefreshToken = token.Refresh_Token,
-                UserName = userdata.Name
+                UserName = userdata.Login
             };
 
             _userServiceRepository.AddUserRefreshTokens(obj);
@@ -70,7 +79,7 @@ namespace Backend.Controllers
             return Ok(token);
         }
         
-        [HttpPost("refresh/token")]
+        [HttpPost("login/refresh/token")]
         [AllowAnonymous]
         public IActionResult RefreshToken([FromBody]Tokens token)
         {
@@ -82,14 +91,14 @@ namespace Backend.Controllers
 
             if (savedRefreshToken.RefreshToken != token.Refresh_Token)
             {
-                return Unauthorized("Invalid attempt!");
+                return Unauthorized("Неудачная попытка!");
             }
 
             var newJwtToken = _jWtManager.GenerateRefreshToken(username);
 
             if (newJwtToken == null)
             {
-                return Unauthorized("Invalid attempt!");
+                return Unauthorized("Неудачная попытка!");
             }
 
             // saving refresh token to the db

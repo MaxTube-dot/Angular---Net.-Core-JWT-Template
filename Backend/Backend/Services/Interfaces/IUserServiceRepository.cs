@@ -13,5 +13,7 @@ public interface IUserServiceRepository
 
     void DeleteUserRefreshTokens(string username, string refreshToken);
 
-    int SaveCommit(); 
+    int SaveCommit();
+
+    Task<bool> CreateAsync(RegistrationCredentials user);
 }

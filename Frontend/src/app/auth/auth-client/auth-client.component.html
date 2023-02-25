@@ -1,13 +1,28 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
-  <div>
+  <div class="form-group form-group--center" >
+    <img class = "logo--big " src="assets/images/favicon.png">
+    <p class="main-text main-text--after-content">Вход</p>
     <div>
-      <input formControlName="login" type="text">
+      <mat-form-field >
+        <input type="email" matInput formControlName="email" placeholder="Логин">
+      </mat-form-field>
     </div>
+
     <div>
-      <input formControlName="login" type="password" >
+      <mat-form-field >
+        <input type="password" matInput formControlName="password" placeholder="Пароль">
+      </mat-form-field>
     </div>
+
     <div>
-      <button type="submit">Вход</button>
+      <button
+        mat-raised-button
+        type="submit"
+        [disabled]="!form.valid"
+        color="primary">Войти</button>
+    </div>
+    <div *ngIf="invalidCredentials">
+      Неверный логин или пароль!
     </div>
   </div>
 </form>

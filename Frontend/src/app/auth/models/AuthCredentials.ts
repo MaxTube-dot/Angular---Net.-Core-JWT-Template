@@ -1,5 +1,5 @@
 export class AuthCredentials {
-login: string | undefined;
+email: string | undefined;
 password: string | undefined;
 
 constructor()  {

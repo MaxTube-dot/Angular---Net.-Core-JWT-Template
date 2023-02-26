@@ -24,14 +24,12 @@ export class AuthService {
     let obs = new Observable((sub) => {
     this.http.post(api, body,{headers: this.headers})
       .subscribe({next: (data: any) => {
-        debugger;
           localStorage.setItem('access_token', data.access_Token);
           localStorage.setItem('refresh_Token', data.refresh_Token);
           this.startRefreshTokenTimer();
           sub.next("Success!");
       },
         error: e => {
-        debugger;
           console.log(e)
           sub.error(e);
         }
@@ -43,10 +41,8 @@ export class AuthService {
   auth (authCred: AuthCredentials): Observable<any>{
     let body = authCred;
     let url = this.endpoint + 'login/auth';
-    debugger;
     const obs = new Observable((sub) => {
       this.http.post(url, body, {headers: this.headers}).subscribe({next: (data: any) => {
-        debugger;
           localStorage.setItem('access_token', data.access_Token);
           localStorage.setItem('refresh_Token', data.refresh_Token);
           this.startRefreshTokenTimer();
@@ -99,8 +95,6 @@ export class AuthService {
 
 
   refreshToken() {
-    debugger;
-
     const body = {
       access_token : localStorage.getItem('access_token'),
       refresh_token : localStorage.getItem('refresh_Token'),
@@ -108,7 +102,6 @@ export class AuthService {
     };
     return this.http.post<any>(`${this.endpoint}login/refresh/token`, body, { headers: this.headers })
       .subscribe({next: (data: any) => {
-        debugger;
         localStorage.setItem('access_token', data.access_Token);
         localStorage.setItem('refresh_Token', data.refresh_Token);
         this.startRefreshTokenTimer();
@@ -122,8 +115,6 @@ export class AuthService {
   }
 
   startRefreshTokenTimer() {
-    // set a timeout to refresh the token a second before it expires
-    debugger;
     const timeout = 40 * 1000;
     this.refreshTokenTimeout = setTimeout(() => this.refreshToken(), timeout);
   }

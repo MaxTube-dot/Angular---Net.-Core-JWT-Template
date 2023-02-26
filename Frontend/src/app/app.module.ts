@@ -13,13 +13,17 @@ import {DateAdapter, MAT_DATE_LOCALE} from "@angular/material/core";
 import {CustomDateAdapter} from "./shared/adapter/CustomDateAdapter";
 import {JWT_OPTIONS, JwtHelperService} from "@auth0/angular-jwt";
 import {AuthGuard} from "./guards/auth-guard.service";
+import { HomeComponent } from './home/home/home.component';
+import {HomeHeaderComponent} from "./home/home/home-header/home-header.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthClientComponent,
     UserProfileComponent,
-    AuthRegistrationComponent
+    AuthRegistrationComponent,
+    HomeComponent,
+    HomeHeaderComponent,
   ],
   imports: [
     BrowserModule,
